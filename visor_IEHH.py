@@ -8,30 +8,7 @@ import streamlit as st
 import plotly.express as px
 
 #%%
-url_ieeh = 'https://reportesdeis.minsal.cl/ieeh/2024/Reporte/EstadoRegistroEgresoSeremiResumen.aspx'
-
-# %%
-def extraeTable(url):
-    response = requests.get(url)
-    response = requests.get(url, timeout=360)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.content, 'html.parser')
-        table = soup.find(id='ctl00_CPH_Cuerpo_GridView1')
-        string_io_table = StringIO(str(table))
-        df = pd.read_html(string_io_table)[0]
-        return df
-    else:
-        print(f'Error al realizar la solicitud: {response.status_code}')
-        return None
-# %%
-df_ieeh=extraeTable(url_ieeh)
-# %%
-new_header = df_ieeh.iloc[0]
-df = df_ieeh[1:]
-df.columns = new_header 
-df['SEREMI de Salud'] = df['SEREMI de Salud'].fillna(method='ffill')
-df_metropolitana = df[df['SEREMI de Salud'] == "SEREMI Metropolitana de Santiago"]
-df_metropolitana=df_metropolitana[1:]
+df_metropolitana=pd.read_csv("data/iehh_metropolitana.csv")
 # %%
 now = datetime.now()
 current_year = now.year
@@ -64,7 +41,7 @@ st.dataframe(df_metropolitana[df_metropolitana['Estado'] == 'Pendiente'])
 pendientes_por_mes = df_metropolitana[months_to_check].isna().sum()
 pendientes_por_mes = pendientes_por_mes[pendientes_por_mes > 0]  # Opcional: Filtrar meses sin pendientes
 pendientes_por_mes_df = pendientes_por_mes.to_frame(name='Número de Pendientes').reset_index()
-pendientes_por_mes_df.rename(columns={0: 'Mes'}, inplace=True)
+pendientes_por_mes_df.rename(columns={'index': 'Mes'}, inplace=True)
 fig_bar = px.bar(pendientes_por_mes_df, x='Mes', y='Número de Pendientes', title='Número de Pendientes por Mes')
 st.plotly_chart(fig_bar)
 
