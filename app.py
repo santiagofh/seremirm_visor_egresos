@@ -1,6 +1,5 @@
 #%%
 import pandas as pd
-from bs4 import BeautifulSoup
 import requests
 from io import StringIO
 from datetime import datetime
@@ -8,7 +7,7 @@ import streamlit as st
 import plotly.express as px
 
 #%%
-df_metropolitana=pd.read_csv("data/iehh_metropolitana.csv")
+df_metropolitana=pd.read_csv("data/iehh_2024_metropolitana.csv")
 # %%
 now = datetime.now()
 current_year = now.year
